@@ -29,8 +29,8 @@ let images = await scrivito.getObjectsByQuery(
 ```
 
 ## API
-- [`createWorkspace(title: string, tenant: string, apiKey: string): Promise`](#createWorkspace(title:-string,-tenant:-string,-apiKey:-string):-Promise)
-- [`getObject(id: string, workspace: string, tenant: string, apiKey: string): Promise`](#getObject(id:-string,-workspace:-string,-tenant:-string,-apiKey:-string):-Promise)
+- [`createWorkspace(title: string, tenant: string, apiKey: string): Promise`](#createworkspacetitle-string-tenant-string-apikey-string-promise)
+- [`getObject(id: string, workspace: string, tenant: string, apiKey: string): Promise`](#getobjectid-string-workspace-string-tenant-string-apikey-string-promise)
 
 #### `createWorkspace(title: string, tenant: string, apiKey: string): Promise`
 Creates a new workspace using the title argument and returns a promise that resolves to its new ID.
