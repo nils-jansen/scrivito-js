@@ -31,6 +31,11 @@ let images = await scrivito.getObjectsByQuery(
 ## API
 - [`createWorkspace(title: string, tenant: string, apiKey: string): Promise`](#createworkspacetitle-string-tenant-string-apikey-string-promise)
 - [`getObject(id: string, workspace: string, tenant: string, apiKey: string): Promise`](#getobjectid-string-workspace-string-tenant-string-apikey-string-promise)
+- [`deleteObject(id: string, workspace: string, tenant: string, apiKey: string): Promise`](#deleteobjectid-string-workspace-string-tenant-string-apikey-string-promise)
+- [`updateObject(obj: any, workspace: string, tenant: string, apiKey: string): Promise`](#updateobjectobj-any-workspace-string-tenant-string-apikey-string-promise)
+- [`publishWorkspace(id: string, tenant: string, apiKey: string): Promise`](#publishworkspaceid-string-tenant-string-apikey-string-promise)
+- [`getIdsByQuery(query: any[], workspace: string, tenant: string, apiKey: string): Promise`](#getidsbyqueryquery-any-workspace-string-tenant-string-apikey-string-promise)
+- [`getObjectsByQuery(query: any[], workspace: string, tenant: string, apiKey: string): Promise`](#getobjectsbyqueryquery-any-workspace-string-tenant-string-apikey-string-promise)
 
 #### `createWorkspace(title: string, tenant: string, apiKey: string): Promise`
 Creates a new workspace using the title argument and returns a promise that resolves to its new ID.
@@ -119,7 +124,7 @@ try {
 ```
 
 #### `getObjectsByQuery(query: any[], workspace: string, tenant: string, apiKey: string): Promise`
-Works like [`getIdsByQuery`](#i), but returns objects instead of IDs inside array.
+Works like [`getIdsByQuery`](#getidsbyqueryquery-any-workspace-string-tenant-string-apikey-string-promise), but returns objects instead of IDs inside array.
 ```javascript
 try {
   let pagesToEdit = await scrivito.getObjectsByQuery(
