@@ -1,6 +1,60 @@
 # scrivito-js
-API Wrapper for interacting with the [Scrivito CMS](https://www.scrivito.com/) API.
+API Wrapper for interacting with the [Scrivito CMS](https://www.scrivito.com/) API. This repository is not associated with Scrivito or Infopark.
 
-It is still under development and will be improved / documented better in the near future.
+## Installation
+Using npm:
+```terminal
+$ npm install scrivito-js
+```
 
-This repository is not associated with Scrivito.
+## Usage
+```javascript
+const scrivito = require("scrivito-js");
+
+let workspace = await scrivito.createWorkspace("Fancy name", TENANT_ID, API_KEY);
+
+let images = await scrivito.getObjectsByQuery(
+  [
+    {
+      field: "_obj_class",
+      operator: "equals",
+      value: "Image",
+    },
+  ],
+  workspace,
+  TENANT_ID,
+  API_KEY
+);
+
+```
+
+## API
+- [`createWorkspace(title: string, tenant: string, apiKey: string): Promise`](#createWorkspace(title:-string,-tenant:-string,-apiKey:-string):-Promise)
+- [`getObject(id: string, workspace: string, tenant: string, apiKey: string): Promise`](#getObject(id:-string,-workspace:-string,-tenant:-string,-apiKey:-string):-Promise)
+
+#### `createWorkspace(title: string, tenant: string, apiKey: string): Promise`
+Creates a new workspace using the title argument and returns a promise that resolves to its new ID.
+```javascript
+let workspace = await scrivito.createWorkspace("Fancy name", TENANT_ID, API_KEY);
+```
+
+#### `getObject(id: string, workspace: string, tenant: string, apiKey: string): Promise`
+Returns a promise that resolves to the object with given ID. Also works with a blank workspace argument, will then use published content.
+```javascript
+let obj = await scrivito.getObject(
+  "someLongId",
+  WORKSPACE_ID,
+  TENANT_ID,
+  API_KEY
+);
+```
+
+
+
+
+
+
+
+
+
+
