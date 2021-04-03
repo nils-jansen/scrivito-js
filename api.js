@@ -1,5 +1,20 @@
 const axios = require("axios").default;
 
+class ScrivitoError extends Error {
+  constructor(message, code) {
+    super(message);
+    this.name = "ScrivitoError";
+    this.code = code;
+  }
+}
+
+const err_messages = {
+  auth: "The authentication provided was not accepted or recognised",
+  notFound: "The object or workspace specified could not be found",
+  rateLimit: "Too many requests were made, request was rate limited",
+  noResponse: "No response was sent by Scrivito",
+};
+
 /**
  * Returns a Promise which resolves to the requested object.
  *
@@ -26,13 +41,38 @@ async function getObject(id, workspace = "published", tenant, apiKey) {
         reject(response);
       }
     } catch (error) {
-      reject(error.response.data.code || error);
+      if (error.isAxiosError) {
+        if (error.response) {
+          switch (error.response.status) {
+            // Response with non-2xx code
+            case 401:
+              reject(new ScrivitoError(err_messages.auth, 401));
+              break;
+            case 404:
+              reject(new ScrivitoError(err_messages.notFound, 404));
+              break;
+            case 429:
+              reject(new ScrivitoError(err_messages.rateLimit, 429));
+            default:
+              reject(error);
+              break;
+          }
+        } else if (error.request) {
+          // No response
+          reject(new ScrivitoError(err_messages.noResponse, undefined));
+        } else {
+          reject(error);
+        }
+      } else {
+        // Non-Axios Error
+        reject(error);
+      }
     }
   });
 }
 
 /**
- * Returns a promise which resolves if the Object is deleted successfully.
+ * Returns a promise which resolves when the Object is deleted successfully.
  *
  * @param {String} id - The ID of the object to be deleted
  * @param {String} workspace - ID of the workspace to delete the object from, "published" by default.
@@ -99,10 +139,48 @@ async function updateObject(obj, workspace = "published", tenant, apiKey) {
           reject(response);
         }
       } catch (error) {
-        reject(error);
+        if (error.isAxiosError) {
+          if (error.response) {
+            switch (error.response.status) {
+              // Response with non-2xx code
+              case 401:
+                reject(new ScrivitoError(err_messages.auth, 401));
+                break;
+              case 404:
+                if (
+                  error.response.data &&
+                  error.response.data.error &&
+                  error.response.data.error.includes("illegal value for key")
+                ) {
+                  reject(
+                    new ScrivitoError(
+                      `An illegal or malformed property was added to the object: ${error.response.data.error}`,
+                      404
+                    )
+                  );
+                } else {
+                  reject(new ScrivitoError(err_messages.notFound, 404));
+                }
+                break;
+              case 429:
+                reject(new ScrivitoError(err_messages.rateLimit, 429));
+              default:
+                reject(error);
+                break;
+            }
+          } else if (error.request) {
+            // No response
+            reject(new ScrivitoError(err_messages.noResponse, undefined));
+          } else {
+            reject(error);
+          }
+        } else {
+          // Non-Axios Error
+          reject(error);
+        }
       }
     } else {
-      reject('Object needs to have a "_id" property.');
+      reject('Object needs to have an "_id" property.');
     }
   });
 }
@@ -323,11 +401,11 @@ async function getObjectsByQueryHelper(
 }
 
 module.exports = {
-  getObject: getObject,
-  deleteObject: deleteObject,
-  updateObject: updateObject,
-  createWorkspace: createWorkspace,
-  publishWorkspace: publishWorkspace,
-  getIdsByQuery: getIdsByQuery,
-  getObjectsByQuery: getObjectsByQuery,
+  getObject,
+  deleteObject,
+  updateObject,
+  createWorkspace,
+  publishWorkspace,
+  getIdsByQuery,
+  getObjectsByQuery,
 };
